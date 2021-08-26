@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>CodeBasics.EfCoreProxies</id>
+    <version>$version$</version>
+    <title>CodeBasics.EfCoreProxies</title>
+    <authors>Bernhard Millauer, Julien Vandenbussche</authors>
+    <owners>SeriousM</owners>
+    <tags>command pattern .net standard</tags>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <!-- <licenseUrl>https://github.com/envkey/envkey-dotnet/blob/master/LICENCE.txt</licenseUrl> -->
+    <projectUrl>https://github.com/SeriousM/CodeBasics.EfCoreProxies</projectUrl>
+    <repository type="git" url="https://github.com/SeriousM/CodeBasics.EfCoreProxies.git" branch="master" />
+    <description>Base classes for commands and input/output validations</description>
+    <dependencies>
+      <group>
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="5.0.0" />
+        <dependency id="Microsoft.Extensions.Logging" version="5.0.0" />
+        <dependency id="System.ComponentModel.Annotations" version="5.0.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\Command\bin\Release\netstandard2.0\CodeBasics.EfCoreProxies.dll" target="lib\netstandard2.0\CodeBasics.EfCoreProxies.dll" />
+  </files>
+</package>
