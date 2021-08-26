@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("CodeBasics.Command.Test")]
+[assembly: InternalsVisibleTo("CodeBasics.EfCoreProxies.Test")]
