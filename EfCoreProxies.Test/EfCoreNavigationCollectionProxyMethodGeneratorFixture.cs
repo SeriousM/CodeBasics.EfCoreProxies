@@ -49,14 +49,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeBasics.EfCoreProxies.Test
 {
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
   partial class TestClass
   {
-    public TestClass(DbContext entities) : this()
+    /// <summary>
+    /// Constructor for EntityFramework. Don't use it! You have been warned.
+    /// </summary>
+    [System.Obsolete(""For internal use only."")]
+    public TestClass(DbContext context) : this()
     {
-      this.Entities = entities;
+      this.Context = context;
     }
 
-    private DbContext Entities { get; set; }
+    /// <summary>
+    /// Private property to support entity framework to set the context once the entity gets attached.
+    /// </summary>
+    private DbContext Context { get; set; }
 
     /// <summary>
     /// Gets a IQueryable for the <see cref=""TestClass.TestItems1""/> collection.
@@ -64,12 +72,12 @@ namespace CodeBasics.EfCoreProxies.Test
     /// </summary>
     public IQueryable<CodeBasics.EfCoreProxies.Test.TestItemA> TestItems1Query()
     {
-      if (Entities is null)
+      if (Context is null)
       {
         return TestItems1.AsQueryable();
       }
 
-      var entityEntry = Entities.Entry(this);
+      var entityEntry = Context.Entry(this);
       var collectionEntry = entityEntry.Collection(e => e.TestItems1);
       var query = collectionEntry.Query();
 
@@ -82,12 +90,12 @@ namespace CodeBasics.EfCoreProxies.Test
     /// </summary>
     public IQueryable<CodeBasics.EfCoreProxies.Test.TestItemB> TestItems2Query()
     {
-      if (Entities is null)
+      if (Context is null)
       {
         return TestItems2.AsQueryable();
       }
 
-      var entityEntry = Entities.Entry(this);
+      var entityEntry = Context.Entry(this);
       var collectionEntry = entityEntry.Collection(e => e.TestItems2);
       var query = collectionEntry.Query();
 
