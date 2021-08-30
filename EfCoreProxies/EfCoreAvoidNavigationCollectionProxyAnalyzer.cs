@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿#nullable enable
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -66,11 +67,11 @@ namespace CodeBasics.EfCoreProxies
         return;
 
       // skip if the property is called by queryable/ef extension methods
-      if (isCalledByAllowedExtensionClasses(context.SemanticModel, memberAccessExpr))
+      if (isCalledByAllowedClasses(context.SemanticModel, memberAccessExpr))
         return;
 
       // skip if the call is in a lambda expression and the class is allowed
-      if (isCalledByAllowedExtensionClassesInLambda(context.SemanticModel, memberAccessExpr))
+      if (isCalledByAllowedClassesInLambda(context.SemanticModel, memberAccessExpr))
         return;
 
       // lets see if the accessed member is a property
@@ -100,7 +101,7 @@ namespace CodeBasics.EfCoreProxies
       context.ReportDiagnostic(diagnostic);
     }
 
-    private static bool isCalledByAllowedExtensionClasses(SemanticModel semanticModel, SyntaxNode memberAccessExpr)
+    private static bool isCalledByAllowedClasses(SemanticModel semanticModel, SyntaxNode memberAccessExpr)
     {
       var surroundingInvocation = findParentOf<InvocationExpressionSyntax>(memberAccessExpr);
       var memberAccessExpressionSyntax = surroundingInvocation?.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
@@ -125,14 +126,14 @@ namespace CodeBasics.EfCoreProxies
       return false;
     }
 
-    private static bool isCalledByAllowedExtensionClassesInLambda(SemanticModel semanticModel, MemberAccessExpressionSyntax memberAccessExpr)
+    private static bool isCalledByAllowedClassesInLambda(SemanticModel semanticModel, MemberAccessExpressionSyntax memberAccessExpr)
     {
       var lambdaExpressionSyntax = findParentOf<SimpleLambdaExpressionSyntax>(memberAccessExpr);
 
       if (lambdaExpressionSyntax is null)
         return false;
 
-      return isCalledByAllowedExtensionClasses(semanticModel, lambdaExpressionSyntax);
+      return isCalledByAllowedClasses(semanticModel, lambdaExpressionSyntax);
     }
 
     private static bool hasGeneratorAttribute(INamedTypeSymbol symbolType)

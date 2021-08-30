@@ -1,4 +1,8 @@
-﻿////using System.Collections.Generic;
+﻿////using System;
+////using System.Collections;
+////using System.Collections.Generic;
+////using System.Linq;
+////using System.Linq.Expressions;
 ////using Microsoft.EntityFrameworkCore;
 
 ////namespace MyNamespace
@@ -8,16 +12,30 @@
 ////  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
 ////  public class TestA
 ////  {
+////    public ICollection<TestB> Items { get; set; }
+////  }
+
+////  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+////  public class TestB
+////  {
 ////    public ICollection<TestItem> Items { get; set; }
+////  }
+
+////  public class DbContext
+////  {
+////    public DbSetImpl<TestA> TestAs { get; set; }
 ////  }
 
 ////  public class Consumer
 ////  {
 ////    public void Call()
 ////    {
-////      var instance = new TestA();
-////      var dbSet = new DbSetImpl<TestA>();
-////      dbSet.CallMe(instance.Items);
+////      var context = new DbContext();
+
+////      var items = context.TestAs
+////                         .Where(t => t.Items.Any(x => true))
+////                         .Select(x => 1)
+////                         .ToArray();
 ////    }
 ////  }
 ////}
@@ -26,8 +44,12 @@
 ////{
 ////  public class DbSetImpl<T> : DbSet<T> { }
 
-////  public abstract class DbSet<T>
+////  public abstract class DbSet<T> : IQueryable<T>
 ////  {
-////    public void CallMe(object o) { }
+////    public IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
+////    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+////    public Type ElementType { get; }
+////    public Expression Expression { get; }
+////    public IQueryProvider Provider { get; }
 ////  }
 ////}

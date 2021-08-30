@@ -2,7 +2,7 @@
 
 set scriptdir=%~dp0
 
-pushd %scriptdir%..\Command.Test\
+pushd %scriptdir%..\EfCoreProxies.Test\
 dotnet test -v normal
 popd
 
@@ -12,11 +12,11 @@ if "%VERSION%"=="" GOTO ERROR
 set /P APIKEY=Enter your Api Key from https://www.nuget.org/account/ApiKeys: 
 if "%APIKEY%"=="" GOTO ERROR
 
-pushd %scriptdir%..\Command\
+pushd %scriptdir%..\EfCoreProxies\
 
 del bin\Release\*.nupkg
 dotnet pack -c Release /p:Version=%VERSION%
-dotnet nuget push bin\Release\CodeBasics.Command.%VERSION%.nupkg --source https://nuget.org/ --api-key %APIKEY%
+dotnet nuget push bin\Release\CodeBasics.EfCoreProxies.%VERSION%.nupkg --source https://nuget.org/ --api-key %APIKEY%
 GOTO END
 
 :ERROR

@@ -160,6 +160,69 @@ namespace MyNamespace
     }
 
     [TestMethod]
+    public async Task File_with_collection_usage_in_lambda_should_not_report()
+    {
+      var source = @"
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+
+namespace MyNamespace
+{
+  public class TestItem { }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestA
+  {
+    public ICollection<TestB> Items { get; set; }
+  }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestB
+  {
+    public ICollection<TestItem> Items { get; set; }
+  }
+
+  public class DbContext
+  {
+    public DbSetImpl<TestA> TestAs { get; set; }
+  }
+
+  public class Consumer
+  {
+    public void Call()
+    {
+      var context = new DbContext();
+      
+      var items = (from en in context.TestAs
+               from ev in en.Items
+               select 1)
+       .ToArray();
+    }
+  }
+}
+
+namespace Microsoft.EntityFrameworkCore
+{
+  public class DbSetImpl<T> : DbSet<T> { }
+
+  public abstract class DbSet<T> : IQueryable<T>
+  {
+    public IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public Type ElementType { get; }
+    public Expression Expression { get; }
+    public IQueryProvider Provider { get; }
+  }
+}";
+
+      await runTestAsync(source, null);
+    }
+
+    [TestMethod]
     public async Task File_with_usage_of_collection_property_within_a_DbContext_should_not_report()
     {
       var source = @"
@@ -195,7 +258,7 @@ namespace MyNamespace
     }
 
     [TestMethod]
-    public async Task File_with_collection_usage_via_DbSet_extensions_should_not_report()
+    public async Task File_with_collection_usage_via_DbSet_method_should_not_report()
     {
       var source = @"
 using System.Collections.Generic;
@@ -229,6 +292,69 @@ namespace Microsoft.EntityFrameworkCore
   public abstract class DbSet<T>
   {
     public void CallMe(object o) { }
+  }
+}";
+
+      await runTestAsync(source, null);
+    }
+
+    [TestMethod]
+    public async Task File_with_collection_usage_via_DbSet_method_in_lambda_should_not_report()
+    {
+      var source = @"
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+
+namespace MyNamespace
+{
+  public class TestItem { }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestA
+  {
+    public ICollection<TestB> Items { get; set; }
+  }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestB
+  {
+    public ICollection<TestItem> Items { get; set; }
+  }
+
+  public class DbContext
+  {
+    public DbSetImpl<TestA> TestAs { get; set; }
+  }
+
+  public class Consumer
+  {
+    public void Call()
+    {
+      var context = new DbContext();
+
+      var items = context.TestAs
+                         .Where(t => t.Items.Any(x => true))
+                         .Select(x => 1)
+                         .ToArray();
+    }
+  }
+}
+
+namespace Microsoft.EntityFrameworkCore
+{
+  public class DbSetImpl<T> : DbSet<T> { }
+
+  public abstract class DbSet<T> : IQueryable<T>
+  {
+    public IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public Type ElementType { get; }
+    public Expression Expression { get; }
+    public IQueryProvider Provider { get; }
   }
 }";
 

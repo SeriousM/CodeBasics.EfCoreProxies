@@ -4,23 +4,23 @@
     <id>CodeBasics.EfCoreProxies</id>
     <version>$version$</version>
     <title>CodeBasics.EfCoreProxies</title>
-    <authors>Bernhard Millauer, Julien Vandenbussche</authors>
+    <authors>Bernhard Millauer</authors>
     <owners>SeriousM</owners>
-    <tags>command pattern .net standard</tags>
+    <tags>efcore proxy proxies lazyloading pattern .net standard analyzers</tags>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <!-- <licenseUrl>https://github.com/envkey/envkey-dotnet/blob/master/LICENCE.txt</licenseUrl> -->
     <projectUrl>https://github.com/SeriousM/CodeBasics.EfCoreProxies</projectUrl>
-    <repository type="git" url="https://github.com/SeriousM/CodeBasics.EfCoreProxies.git" branch="master" />
+    <repository type="git" url="https://github.com/SeriousM/CodeBasics.EfCoreProxies.git" branch="main" />
     <description>Base classes for commands and input/output validations</description>
     <dependencies>
       <group>
-        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="5.0.0" />
-        <dependency id="Microsoft.Extensions.Logging" version="5.0.0" />
-        <dependency id="System.ComponentModel.Annotations" version="5.0.0" />
+        <dependency id="Microsoft.CodeAnalysis.CSharp" version="3.11.0" />
+        <dependency id="Microsoft.CodeAnalysis.Analyzers" version="3.3.2" />
+        <dependency id="Microsoft.CodeAnalysis.CSharp.Workspaces" version="3.11.0" />
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="..\Command\bin\Release\netstandard2.0\CodeBasics.EfCoreProxies.dll" target="lib\netstandard2.0\CodeBasics.EfCoreProxies.dll" />
+    <file src="..\EfCoreProxies\bin\Release\netstandard2.0\CodeBasics.EfCoreProxies.dll" target="analyzers\dotnet\cs\CodeBasics.EfCoreProxies.dll" />
   </files>
 </package>

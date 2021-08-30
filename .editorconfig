@@ -1,0 +1,13 @@
+# EditorConfig is awesome: http://EditorConfig.org
+root = true
+
+[*]
+end_of_line = crlf
+indent_style = space
+trim_trailing_whitespace = true
+indent_size = 2
+
+[*.cs]
+
+# Disable all VS Style analyzers
+dotnet_analyzer_diagnostic.category-Style.severity = none

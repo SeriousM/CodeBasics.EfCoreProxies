@@ -2,17 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <NuspecFile>../NuGet/CodeBasics.Command.nuspec</NuspecFile>
+    <NuspecFile>../NuGet/CodeBasics.EfCoreProxies.nuspec</NuspecFile>
     <NuspecProperties>version=$(Version)</NuspecProperties>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="CodeBasics.Command.csproj.DotSettings" />
+    <None Remove="CodeBasics.EfCoreProxies.csproj.DotSettings" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IndexRange" Version="1.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" Version="3.11.0" />

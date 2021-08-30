@@ -7,6 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeBasics.EfCoreProxies", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeBasics.EfCoreProxies.Test", "EfCoreProxies.Test\CodeBasics.EfCoreProxies.Test.csproj", "{0081A3FC-C439-4E77-8D4B-5CC90D666D4E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{079988AE-9FA9-4B53-B4B0-F571F53180E0}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		NuGet\CodeBasics.EfCoreProxies.nuspec = NuGet\CodeBasics.EfCoreProxies.nuspec
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
