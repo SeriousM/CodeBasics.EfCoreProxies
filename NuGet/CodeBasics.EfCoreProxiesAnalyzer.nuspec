@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>CodeBasics.EfCoreProxies</id>
+    <id>CodeBasics.EfCoreProxiesAnalyzer</id>
     <version>$version$</version>
-    <title>CodeBasics.EfCoreProxies</title>
+    <title>CodeBasics.EfCoreProxiesAnalyzer</title>
     <authors>Bernhard Millauer</authors>
     <owners>SeriousM</owners>
     <tags>efcore proxy proxies lazyloading pattern .net standard analyzers</tags>

@@ -10,7 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{079988AE-9FA9-4B53-B4B0-F571F53180E0}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		NuGet\CodeBasics.EfCoreProxies.nuspec = NuGet\CodeBasics.EfCoreProxies.nuspec
+		NuGet\CodeBasics.EfCoreProxiesAnalyzer.nuspec = NuGet\CodeBasics.EfCoreProxiesAnalyzer.nuspec
 		README.md = README.md
 	EndProjectSection
 EndProject

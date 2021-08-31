@@ -9,14 +9,17 @@ popd
 set /P VERSION=Version to Build (eg. 1.2.4): 
 if "%VERSION%"=="" GOTO ERROR
 
-set /P APIKEY=Enter your Api Key from https://www.nuget.org/account/ApiKeys: 
-if "%APIKEY%"=="" GOTO ERROR
-
 pushd %scriptdir%..\EfCoreProxies\
 
 del bin\Release\*.nupkg
 dotnet pack -c Release /p:Version=%VERSION%
-dotnet nuget push bin\Release\CodeBasics.EfCoreProxies.%VERSION%.nupkg --source https://nuget.org/ --api-key %APIKEY%
+
+echo Nuget package is built, now publish!
+
+set /P APIKEY=Enter your Api Key from https://www.nuget.org/account/ApiKeys: 
+if "%APIKEY%"=="" GOTO ERROR
+
+dotnet nuget push bin\Release\CodeBasics.EfCoreProxiesAnalyzer.%VERSION%.nupkg --source https://nuget.org/ --api-key %APIKEY%
 GOTO END
 
 :ERROR

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <NuspecFile>../NuGet/CodeBasics.EfCoreProxies.nuspec</NuspecFile>
+    <NuspecFile>../NuGet/CodeBasics.EfCoreProxiesAnalyzer.nuspec</NuspecFile>
     <NuspecProperties>version=$(Version)</NuspecProperties>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
