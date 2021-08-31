@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeBasics.EfCoreProxies
@@ -38,7 +39,8 @@ namespace CodeBasics.EfCoreProxies
                        .GetRoot()
                        .DescendantNodesAndSelf()
                        .OfType<ClassDeclarationSyntax>()
-                       .Select(c => semanticModel.GetDeclaredSymbol(c))
+                       .Where(c => c.ChildTokens().Any(t => t.Kind() == SyntaxKind.PartialKeyword))
+                       .Select(c => ModelExtensions.GetDeclaredSymbol(semanticModel, c))
                        .OfType<ITypeSymbol>()
                        .ToArray();
 
