@@ -14,9 +14,9 @@
     <description>Base classes for commands and input/output validations</description>
     <dependencies>
       <group>
-        <dependency id="Microsoft.CodeAnalysis.CSharp" version="3.11.0" />
+        <dependency id="Microsoft.CodeAnalysis.CSharp" version="3.8.0" />
         <dependency id="Microsoft.CodeAnalysis.Analyzers" version="3.3.2" />
-        <dependency id="Microsoft.CodeAnalysis.CSharp.Workspaces" version="3.11.0" />
+        <dependency id="Microsoft.CodeAnalysis.CSharp.Workspaces" version="3.8.0" />
       </group>
     </dependencies>
   </metadata>
