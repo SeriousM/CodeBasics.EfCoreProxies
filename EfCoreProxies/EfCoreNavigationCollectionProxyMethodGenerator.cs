@@ -39,7 +39,7 @@ namespace CodeBasics.EfCoreProxies
                        .GetRoot()
                        .DescendantNodesAndSelf()
                        .OfType<ClassDeclarationSyntax>()
-                       .Where(c => c.ChildTokens().Any(t => t.Kind() == SyntaxKind.PartialKeyword))
+                       .Where(c => c.ChildTokens().Any(t => t.IsKind(SyntaxKind.PartialKeyword)))
                        .Select(c => ModelExtensions.GetDeclaredSymbol(semanticModel, c))
                        .OfType<ITypeSymbol>()
                        .ToArray();
@@ -165,7 +165,7 @@ namespace {typeSymbol.ContainingNamespace}
       var query = collectionEntry.Query();
 
       return query;
-    }}".Trim(Environment.NewLine.ToArray())).AppendLine();
+    }}".Trim("\r\n".ToArray())).AppendLine();
       }
 
       return sb.ToString().Trim();

@@ -110,7 +110,7 @@ namespace CodeBasics.EfCoreProxies.Test
     private static Compilation createCompilation(string source)
     {
       return CSharpCompilation.Create("compilation",
-        new[] { CSharpSyntaxTree.ParseText(source, new CSharpParseOptions(LanguageVersion.CSharp9)) },
+        new[] { CSharpSyntaxTree.ParseText(source, new CSharpParseOptions(LanguageVersion.CSharp11)) },
         new[] { MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location) /* additional assemblies to load */ },
         new CSharpCompilationOptions(OutputKind.ConsoleApplication));
     }

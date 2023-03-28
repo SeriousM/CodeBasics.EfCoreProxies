@@ -14,13 +14,15 @@
     <description>Base classes for commands and input/output validations</description>
     <dependencies>
       <group>
-        <dependency id="Microsoft.CodeAnalysis.CSharp" version="3.8.0" />
-        <dependency id="Microsoft.CodeAnalysis.Analyzers" version="3.3.2" />
-        <dependency id="Microsoft.CodeAnalysis.CSharp.Workspaces" version="3.8.0" />
+        <dependency id="Microsoft.CodeAnalysis.CSharp" version="4.4.0" />
+        <dependency id="Microsoft.CodeAnalysis.Analyzers" version="3.3.4" />
+        <dependency id="Microsoft.CodeAnalysis.CSharp.Workspaces" version="4.4.0" />
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src="..\EfCoreProxies\bin\Release\netstandard2.0\CodeBasics.EfCoreProxies.dll" target="analyzers\dotnet\cs\CodeBasics.EfCoreProxies.dll" />
+    <file src="..\EfCoreProxies\bin\Release\netstandard2.0\CodeBasics.EfCoreProxies.xml" target="analyzers\dotnet\cs\CodeBasics.EfCoreProxies.xml" />
+    <file src="..\EfCoreProxies\bin\Release\netstandard2.0\CodeBasics.EfCoreProxies.pdb" target="analyzers\dotnet\cs\CodeBasics.EfCoreProxies.pdb" />
   </files>
 </package>
