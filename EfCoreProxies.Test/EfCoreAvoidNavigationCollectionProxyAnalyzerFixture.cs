@@ -620,7 +620,278 @@ namespace MyNamespace
       await runTestAsync(source, null);
     }
 
-    private static async Task runTestAsync(string source, DiagnosticResult? expectedDiagnostic)
+    [TestMethod]
+    public async Task File_with_nested_lambda_collection_usage_in_query_should_not_report()
+    {
+      var source = @"
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+
+namespace MyNamespace
+{
+  public class TestItem { }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestA
+  {
+    public ICollection<TestB> Items { get; set; }
+  }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestB
+  {
+    public ICollection<TestItem> NestedItems { get; set; }
+  }
+
+  public class DbContext
+  {
+    public DbSetImpl<TestA> TestAs { get; set; }
+  }
+
+  public class Consumer
+  {
+    public void Call()
+    {
+      var context = new DbContext();
+
+      var items = context.TestAs
+                         .Select(x => new { Count = x.Items.Count(i => i.NestedItems.Any(n => true)) })
+                         .ToArray();
+    }
+  }
+}
+
+namespace Microsoft.EntityFrameworkCore
+{
+  public class DbSetImpl<T> : DbSet<T> { }
+
+  public abstract class DbSet<T> : IQueryable<T>
+  {
+    public IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public Type ElementType { get; }
+    public Expression Expression { get; }
+    public IQueryProvider Provider { get; }
+  }
+}";
+
+      await runTestAsync(source, null);
+    }
+
+    [TestMethod]
+    public async Task File_with_parenthesized_lambda_collection_usage_in_query_should_not_report()
+    {
+      var source = @"
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+
+namespace MyNamespace
+{
+  public class TestItem { }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestA
+  {
+    public ICollection<TestItem> Items { get; set; }
+  }
+
+  public class DbContext
+  {
+    public DbSetImpl<TestA> TestAs { get; set; }
+  }
+
+  public class Consumer
+  {
+    public void Call()
+    {
+      var context = new DbContext();
+
+      var items = context.TestAs
+                         .Select((x) => new { Count = x.Items.Count() })
+                         .ToArray();
+    }
+  }
+}
+
+namespace Microsoft.EntityFrameworkCore
+{
+  public class DbSetImpl<T> : DbSet<T> { }
+
+  public abstract class DbSet<T> : IQueryable<T>
+  {
+    public IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public Type ElementType { get; }
+    public Expression Expression { get; }
+    public IQueryProvider Provider { get; }
+  }
+}";
+
+      await runTestAsync(source, null);
+    }
+
+    [TestMethod]
+    public async Task File_with_deeply_nested_lambda_collection_usage_in_query_should_not_report()
+    {
+      var source = @"
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+
+namespace MyNamespace
+{
+  public class TestItem { }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestA
+  {
+    public ICollection<TestB> Items { get; set; }
+  }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestB
+  {
+    public ICollection<TestC> NestedItems { get; set; }
+  }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestC
+  {
+    public ICollection<TestItem> DeeperItems { get; set; }
+  }
+
+  public class DbContext
+  {
+    public DbSetImpl<TestA> TestAs { get; set; }
+  }
+
+  public class Consumer
+  {
+    public void Call()
+    {
+      var context = new DbContext();
+
+      var items = context.TestAs
+                         .Select(x => new { Count = x.Items.Count(i => i.NestedItems.Count(n => n.DeeperItems.Any(d => true)) > 0) })
+                         .ToArray();
+    }
+  }
+}
+
+namespace Microsoft.EntityFrameworkCore
+{
+  public class DbSetImpl<T> : DbSet<T> { }
+
+  public abstract class DbSet<T> : IQueryable<T>
+  {
+    public IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public Type ElementType { get; }
+    public Expression Expression { get; }
+    public IQueryProvider Provider { get; }
+  }
+}";
+
+      await runTestAsync(source, null);
+    }
+
+    [TestMethod]
+    public async Task File_with_nested_lambda_collection_usage_should_report()
+    {
+      var source = @"
+using System.Collections.Generic;
+using System.Linq;
+
+namespace MyNamespace
+{
+  public class TestItem { }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestA
+  {
+    public ICollection<TestB> Items { get; set; }
+  }
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestB
+  {
+    public ICollection<TestItem> NestedItems { get; set; }
+  }
+
+  public class Consumer
+  {
+    public void Call()
+    {
+      var instance = new TestA();
+      var count = instance.Items.Count(i => i.NestedItems.Any(n => true));
+    }
+  }
+}";
+
+      var expectedDiagnostic1 = diagnostic()
+                              .WithMessage("Use the ItemsQuery() method")
+                              .WithSeverity(DiagnosticSeverity.Warning)
+                              .WithSpan("/0/Test1.cs", 26, 28, 26, 33)
+                              .WithArguments("Items");
+
+      var expectedDiagnostic2 = diagnostic()
+                              .WithMessage("Use the NestedItemsQuery() method")
+                              .WithSeverity(DiagnosticSeverity.Warning)
+                              .WithSpan("/0/Test1.cs", 26, 47, 26, 58)
+                              .WithArguments("NestedItems");
+
+      await runTestAsync(source, expectedDiagnostic1, expectedDiagnostic2);
+    }
+
+    [TestMethod]
+    public async Task File_with_collection_read_assignment_should_report()
+    {
+      var source = @"
+using System.Collections.Generic;
+using System.Linq;
+
+namespace MyNamespace
+{
+  public class TestItem {}
+
+  [CodeBasics.EfCoreProxies.EfCoreNavigationCollectionProxyGenerated]
+  public class TestA
+  {
+    public ICollection<TestItem> Items { get; set; }
+  }
+
+  public class Consumer 
+  {
+    public void Call()
+    {
+      var instance = new TestA();
+      ICollection<TestItem> collection;
+      collection = instance.Items;
+    }
+  }
+}";
+
+      var expectedDiagnostic = diagnostic()
+                              .WithMessage("Use the ItemsQuery() method")
+                              .WithSeverity(DiagnosticSeverity.Warning)
+                              .WithSpan("/0/Test1.cs", 21, 29, 21, 34)
+                              .WithArguments("Items");
+
+      await runTestAsync(source, expectedDiagnostic);
+    }
+
+    private static async Task runTestAsync(string source, params DiagnosticResult?[] expectedDiagnostics)
     {
       var attributeDefinition = EfCoreNavigationCollectionProxyMethodGenerator.GenerateAttributeHeader()
                               + EfCoreNavigationCollectionProxyMethodGenerator.GenerateAttribute();
@@ -628,22 +899,28 @@ namespace MyNamespace
       var test = new CSharpTest
       {
         TestState =
+        {
+          Sources =
           {
-            Sources =
-            {
-              attributeDefinition,
-              source
-            },
-            AdditionalFiles =
-            {
-              ("File1.txt", "Content without braces"),
-            }
+            attributeDefinition,
+            source
+          },
+          AdditionalFiles =
+          {
+            ("File1.txt", "Content without braces"),
           }
+        }
       };
 
-      if (expectedDiagnostic.HasValue)
+      if (expectedDiagnostics is not null)
       {
-        test.TestState.ExpectedDiagnostics.Add(expectedDiagnostic.Value);
+        foreach (var expectedDiagnostic in expectedDiagnostics)
+        {
+          if (expectedDiagnostic.HasValue)
+          {
+            test.TestState.ExpectedDiagnostics.Add(expectedDiagnostic.Value);
+          }
+        }
       }
 
       await test.RunAsync();

@@ -50,8 +50,11 @@ namespace CodeBasics.EfCoreProxies
       // instance.collection; -> memberAccessExpr
       var memberAccessExpr = (MemberAccessExpressionSyntax)context.Node;
 
-      // skip if the property is about to be assigned (assign new value to it)
-      if (memberAccessExpr.Parent is AssignmentExpressionSyntax)
+      // skip if the property is about to be assigned a new value.
+      // only when it is the assignment target - reading it (e.g. `x = instance.Items;`)
+      // still materializes the whole collection.
+      if (memberAccessExpr.Parent is AssignmentExpressionSyntax assignment
+       && assignment.Left == memberAccessExpr)
         return;
       
       // skip "nameof" usages
@@ -68,10 +71,6 @@ namespace CodeBasics.EfCoreProxies
 
       // skip if the property is called by queryable/ef extension methods
       if (isCalledByAllowedClasses(context.SemanticModel, memberAccessExpr))
-        return;
-
-      // skip if the call is in a lambda expression and the class is allowed
-      if (isCalledByAllowedClassesInLambda(context.SemanticModel, memberAccessExpr))
         return;
 
       // lets see if the accessed member is a property
@@ -103,37 +102,38 @@ namespace CodeBasics.EfCoreProxies
 
     private static bool isCalledByAllowedClasses(SemanticModel semanticModel, SyntaxNode memberAccessExpr)
     {
-      var surroundingInvocation = findParentOf<InvocationExpressionSyntax>(memberAccessExpr);
-      var memberAccessExpressionSyntax = surroundingInvocation?.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
+      // Walk all enclosing invocations (across lambda boundaries) and check if ANY of them
+      // is an EF Core / Queryable method. If so, the collection access is part of a query
+      // that EF translates to SQL - no collection gets materialized on the client.
+      // This must span nested lambdas, e.g.
+      //   context.Companies.Select(c => c.CompanyOrders.Count(o => o.OrderItems.Any(...)))
+      // where the inner Enumerable.Count / Enumerable.Any calls are fine because they are
+      // wrapped by Queryable.Select.
+      for (var current = memberAccessExpr.Parent; current != null; current = current.Parent)
+      {
+        if (current is not InvocationExpressionSyntax invocation)
+          continue;
 
-      if (memberAccessExpressionSyntax is null)
-        return false;
+        var memberAccessExpressionSyntax = invocation.ChildNodes().OfType<MemberAccessExpressionSyntax>().FirstOrDefault();
+        if (memberAccessExpressionSyntax is null)
+          continue;
 
-      var methodSymbol = semanticModel.GetSymbolInfo(memberAccessExpressionSyntax).Symbol as IMethodSymbol;
-      var methodContainingType = methodSymbol?.ContainingType;
+        var methodSymbol = semanticModel.GetSymbolInfo(memberAccessExpressionSyntax).Symbol as IMethodSymbol;
+        var methodContainingType = methodSymbol?.ContainingType;
 
-      if (methodContainingType is null)
-        return false;
+        if (methodContainingType is null)
+          continue;
 
-      if (methodContainingType.Name == "Queryable"
-       && methodContainingType.ContainingNamespace.ToString() == "System.Linq")
-        return true;
-      
-      if (methodContainingType.Name is "EntityFrameworkQueryableExtensions" or "DbSet"
-       && methodContainingType.ContainingNamespace.ToString() == "Microsoft.EntityFrameworkCore")
-        return true;
+        if (methodContainingType.Name == "Queryable"
+         && methodContainingType.ContainingNamespace.ToString() == "System.Linq")
+          return true;
+
+        if (methodContainingType.Name is "EntityFrameworkQueryableExtensions" or "DbSet"
+         && methodContainingType.ContainingNamespace.ToString() == "Microsoft.EntityFrameworkCore")
+          return true;
+      }
 
       return false;
-    }
-
-    private static bool isCalledByAllowedClassesInLambda(SemanticModel semanticModel, MemberAccessExpressionSyntax memberAccessExpr)
-    {
-      var lambdaExpressionSyntax = findParentOf<SimpleLambdaExpressionSyntax>(memberAccessExpr);
-
-      if (lambdaExpressionSyntax is null)
-        return false;
-
-      return isCalledByAllowedClasses(semanticModel, lambdaExpressionSyntax);
     }
 
     private static bool hasGeneratorAttribute(INamedTypeSymbol symbolType)
